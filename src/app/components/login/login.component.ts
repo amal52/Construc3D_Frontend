@@ -32,7 +32,7 @@ import { Router } from '@angular/router';
               <mat-label>Mot de passe</mat-label>
               <input matInput type="password" [(ngModel)]="password" name="password" required>
             </mat-form-field>
-            <button mat-raised-button color="primary" type="submit">Se connecter</button>
+            <button mat-raised-button color="--primary-color" type="submit">Se connecter</button>
           </form>
         </mat-card-content>
       </mat-card>

@@ -99,14 +99,12 @@ import { Router } from '@angular/router';
                 </div>
               </div>
             </mat-tab>
-
             <!-- Onglet Animation -->
             <mat-tab>
               <ng-template mat-tab-label>
                 <mat-icon class="tab-icon">animation</mat-icon>
                 Animation
-              </ng-template>
-              
+              </ng-template>    
               <div class="tab-content">
                 <div class="control-group">
                   <label>Vitesse de Rotation</label>
@@ -114,7 +112,6 @@ import { Router } from '@angular/router';
                     <input matSliderThumb [(ngModel)]="rotationSpeed" (change)="updateModel()">
                   </mat-slider>
                 </div>
-
                 <div class="control-group">
                   <label>Type d'Animation</label>
                   <mat-form-field appearance="fill" class="full-width">
@@ -129,18 +126,14 @@ import { Router } from '@angular/router';
             </mat-tab>
           </mat-tab-group>
         </mat-card-content>
-
         <mat-card-actions>
           <button mat-raised-button color="" (click)="resetChanges()">
-            <mat-icon>restart_alt</mat-icon>
             Réinitialiser
           </button>
           <button mat-raised-button color="" (click)="saveChanges()">
-            <mat-icon>save</mat-icon>
             Sauvegarder
           </button>
           <button mat-raised-button color="" (click)="onFinish()">
-            <mat-icon>check</mat-icon>
             Terminer
           </button>
         </mat-card-actions>

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
@@ -16,7 +15,6 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     MatCardModule,
     MatButtonModule,
-    MatIconModule,
     MatInputModule,
     MatFormFieldModule,
     MatChipsModule,
@@ -37,27 +35,25 @@ import { FormsModule } from '@angular/forms';
             <div class="link-container">
               <input type="text" [value]="shareLink" readonly #linkInput>
               <button mat-icon-button (click)="copyLink(linkInput)">
-                <mat-icon>content_copy</mat-icon>
+                <img src="assets/icons/copy.svg" alt="Copier" class="icon">
               </button>
             </div>
           </div>
-
           <div class="collaborators-section">
             <h3>Inviter des collaborateurs</h3>
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Adresse email</mat-label>
               <input matInput type="email" [(ngModel)]="newCollaborator">
               <button mat-icon-button matSuffix (click)="addCollaborator()">
-                <mat-icon>person_add</mat-icon>
+                <img src="assets/icons/add-user.svg" alt="Ajouter" class="icon">
               </button>
             </mat-form-field>
-
             <div class="collaborators-list">
               <mat-chip-listbox [(ngModel)]="permission">
                 <mat-chip *ngFor="let collaborator of collaborators" (removed)="removeCollaborator(collaborator)">
                   {{ collaborator }}
                   <button matChipRemove>
-                    <mat-icon>cancel</mat-icon>
+                    <img src="assets/icons/remove.svg" alt="Supprimer" class="icon">
                   </button>
                 </mat-chip>
               </mat-chip-listbox>
@@ -73,16 +69,6 @@ import { FormsModule } from '@angular/forms';
             </mat-chip-listbox>
           </div>
         </mat-card-content>
-
-        <!-- <mat-card-actions>
-  <button mat-raised-button 
-          (click)="shareModel()"
-          [ngStyle]="{'background-color': '#711C02', 'color': 'white'}">
-    <mat-icon>share</mat-icon>
-    Partager
-  </button>
-</mat-card-actions> -->
-
       </mat-card>
     </div>
   `,
@@ -125,6 +111,11 @@ import { FormsModule } from '@angular/forms';
       font-family: monospace;
     }
 
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+
     .full-width {
       width: 100%;
     }
@@ -149,13 +140,6 @@ import { FormsModule } from '@angular/forms';
     mat-chip-option.mat-mdc-chip-selected {
       background-color: var(--primary-color);
       color: white;
-    }
-
-    mat-card-actions {
-      display: flex;
-      justify-content:center;
-      margin-top: auto;
-      padding: 16px 0 0;
     }
 
     @media (max-width: 600px) {
@@ -195,12 +179,5 @@ removeCollaborator(email: string) {
 
 validateEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-shareModel() {
-    console.log('Sharing model with:', {
-        collaborators: this.collaborators,
-        permission: this.permission
-    });
 }
 }
