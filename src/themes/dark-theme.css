@@ -1,0 +1,144 @@
+/* Dark Theme Variables */
+:root[data-theme="dark"] {
+  --primary-color: #E4995B;
+  --accent-color: #924118;
+  --secondary-color: #F0E3CA;
+  --tertiary-color: #381A0D;
+  --dark-color: #010000;
+  --light-color: #FFFFFF;
+  --warn-color: #924118;
+  
+  /* Semantic Colors */
+  --background-color: var(--dark-color);
+  --surface-color: #1A0D06;
+  --text-primary: var(--secondary-color);
+  --text-secondary: var(--primary-color);
+  --border-color: var(--accent-color);
+  --hover-color: var(--tertiary-color);
+  --active-color: var(--primary-color);
+  --disabled-color: #4A2815;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Material Design Components */
+:root[data-theme="dark"] .mat-toolbar {
+  background-color: var(--tertiary-color) !important;
+  color: var(--secondary-color) !important;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+:root[data-theme="dark"] .mat-card {
+  background-color: var(--surface-color) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px var(--shadow-color) !important;
+}
+
+:root[data-theme="dark"] .mat-card-title {
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+:root[data-theme="dark"] .mat-card-subtitle {
+  color: var(--text-secondary) !important;
+}
+
+/* Form Controls */
+:root[data-theme="dark"] .mat-mdc-form-field {
+  --mdc-filled-text-field-active-indicator-color: var(--active-color);
+  --mdc-filled-text-field-hover-active-indicator-color: var(--hover-color);
+  --mdc-filled-text-field-focus-active-indicator-color: var(--active-color);
+  --mdc-filled-text-field-container-color: var(--surface-color);
+  --mdc-filled-text-field-label-text-color: var(--text-secondary);
+  --mdc-filled-text-field-input-text-color: var(--text-primary);
+  --mdc-filled-text-field-focus-label-text-color: var(--active-color);
+}
+
+/* Buttons */
+:root[data-theme="dark"] .mat-mdc-button {
+  --mdc-filled-button-container-color: var(--active-color);
+  --mdc-filled-button-label-text-color: var(--dark-color);
+  --mdc-outlined-button-outline-color: var(--border-color);
+  --mdc-outlined-button-label-text-color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .mat-mdc-button:hover {
+  --mdc-filled-button-container-color: var(--hover-color);
+}
+
+/* Tabs */
+:root[data-theme="dark"] .mat-mdc-tab-group {
+  --mdc-tab-indicator-active-indicator-color: var(--active-color);
+  --mat-tab-header-active-ripple-color: var(--active-color);
+  --mat-tab-header-inactive-ripple-color: var(--hover-color);
+  background-color: var(--surface-color);
+}
+
+:root[data-theme="dark"] .mat-mdc-tab .mdc-tab__text-label {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: var(--active-color);
+}
+
+/* Sliders */
+:root[data-theme="dark"] .mat-mdc-slider {
+  --mdc-slider-handle-color: var(--active-color);
+  --mdc-slider-focus-handle-color: var(--hover-color);
+  --mdc-slider-hover-handle-color: var(--hover-color);
+  --mdc-slider-active-track-color: var(--active-color);
+  --mdc-slider-inactive-track-color: var(--border-color);
+}
+
+/* Progress Bar */
+:root[data-theme="dark"] .mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: var(--active-color);
+  --mdc-linear-progress-track-color: var(--border-color);
+}
+
+/* Icons */
+:root[data-theme="dark"] .mat-icon {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .mat-icon.active {
+  color: var(--active-color);
+}
+
+/* Custom Dark Theme Overrides */
+:root[data-theme="dark"] .file-upload-container {
+  background-color: var(--surface-color);
+  border-color: var(--border-color);
+}
+
+:root[data-theme="dark"] .file-upload-container:hover {
+  background-color: var(--surface-color);
+  border-color: var(--primary-color);
+}
+
+:root[data-theme="dark"] .upload-text {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .supported-formats {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .progress-container {
+  background-color: rgba(228, 153, 91, 0.1);
+}
+
+/* Dialog Styles */
+:root[data-theme="dark"] .mat-mdc-dialog-container {
+  background-color: var(--surface-color) !important;
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="dark"] .mat-mdc-dialog-title {
+  color: var(--primary-color) !important;
+}
+
+:root[data-theme="dark"] .mat-mdc-dialog-content {
+  color: var(--text-secondary) !important;
+}
