@@ -7,7 +7,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { ShareComponent } from '../share/share.component';
 
 @Component({
   selector: 'app-upload',
@@ -42,9 +41,11 @@ import { ShareComponent } from '../share/share.component';
               style="display: none"
               (change)="onFileSelected($event)"
               accept=".png,.jpg,.jpeg,.svg">
-            <mat-icon [class.error-icon]="hasError" class="upload-icon">
-              {{ hasError ? 'error' : 'cloud_upload' }}
-            </mat-icon>
+            <img 
+              [src]="hasError ? 'assets/icons/error.svg' : 'assets/icons/upload.svg'"
+              [alt]="hasError ? 'Erreur' : 'Télécharger'"
+              class="upload-icon"
+            >
             <p class="upload-text">{{ hasError ? errorMessage : 'Glissez-déposez votre fichier ici ou cliquez pour sélectionner' }}</p>
             <p class="supported-formats">Formats supportés: PNG, JPG, SVG</p>
           </div>
@@ -56,20 +57,13 @@ import { ShareComponent } from '../share/share.component';
               [value]="uploadProgress">
             </mat-progress-bar>
           </div>
-
-          <div class="share-section" *ngIf="!uploading">
-            <button mat-raised-button color="primary" (click)="openShareDialog()">
-              <mat-icon>share</mat-icon>
-              Partager avec l'équipe
-            </button>
-          </div>
         </mat-card-content>
       </mat-card>
     </div>
   `,
   styles: [`
     .upload-container {
-      min-height: calc(90vh - 64px);
+      min-height: calc(100vh - 64px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -106,15 +100,9 @@ import { ShareComponent } from '../share/share.component';
     }
 
     .upload-icon {
-      font-size: 48px;
       width: 48px;
       height: 48px;
-      color: var(--primary-color);
       margin-bottom: 16px;
-    }
-
-    .upload-icon.error-icon {
-      color: var(--warn-color);
     }
 
     .upload-text {
@@ -141,17 +129,11 @@ import { ShareComponent } from '../share/share.component';
       font-weight: 500;
     }
 
-    .share-section {
-      margin-top: 24px;
-      text-align: center;
-    }
-
     mat-card-title {
       color: var(--primary-color) !important;
       font-size: 1.5rem !important;
       margin-bottom: 8px !important;
     }
-
     @media (max-width: 768px) {
       .upload-card {
         padding: 24px;
@@ -238,12 +220,5 @@ export class UploadComponent {
         }, 500);
       }
     }, 500);
-  }
-
-  openShareDialog() {
-    this.dialog.open(ShareComponent, {
-      width: '500px',
-      panelClass: 'share-dialog'
-    });
   }
 }
