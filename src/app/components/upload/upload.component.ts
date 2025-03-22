@@ -21,72 +21,138 @@ import { Router } from '@angular/router';
     MatDialogModule
   ],
   template: `
-    <div class="upload-container">
-      <mat-card class="upload-card">
-        <mat-card-header>
-          <mat-card-title>Soumettre un Design 2D</mat-card-title>
-          <mat-card-subtitle>Transformez vos créations 2D en modèles 3D</mat-card-subtitle>
-        </mat-card-header>
-        
-        <mat-card-content>
-          <div 
-            class="file-upload-container"
-            [class.error]="hasError"
-            (dragover)="onDragOver($event)"
-            (drop)="onDrop($event)"
-            (click)="fileInput.click()">
-            <input
-              #fileInput
-              type="file"
-              style="display: none"
-              (change)="onFileSelected($event)"
-              accept=".png,.jpg,.jpeg,.svg">
-            <img 
-              [src]="hasError ? 'assets/icons/error.svg' : 'assets/icons/upload.svg'"
-              [alt]="hasError ? 'Erreur' : 'Télécharger'"
-              class="upload-icon"
-            >
-            <p class="upload-text">{{ hasError ? errorMessage : 'Glissez-déposez votre fichier ici ou cliquez pour sélectionner' }}</p>
-            <p class="supported-formats">Formats supportés: PNG, JPG, SVG</p>
-          </div>
+    <div class="upload-page">
+      <div class="hero-section">
+        <div class="logo-container">
+          <img src="assets/icons/3d.png" alt="Logo 3D" class="logo-3d">
+        </div>
+        <h1 class="main-title">Transformez vos Designs 2D en Modèles 3D</h1>
+        <p class="description">
+          Notre plateforme utilise une technologie d'IA avancée pour convertir instantanément 
+          vos créations 2D en modèles 3D époustouflants. Idéal pour les designers, 
+          architectes et créatifs qui souhaitent donner vie à leurs projets.
+        </p>
+      </div>
+
+      <div class="upload-container">
+        <mat-card class="upload-card">
+          <mat-card-header>
+            <mat-card-title>Soumettre un Design 2D</mat-card-title>
+            <mat-card-subtitle>Transformez vos créations 2D en modèles 3D</mat-card-subtitle>
+          </mat-card-header>
           
-          <div class="progress-container" *ngIf="uploading">
-            <p class="upload-status">Téléchargement en cours... {{uploadProgress}}%</p>
-            <mat-progress-bar
-              mode="determinate"
-              [value]="uploadProgress">
-            </mat-progress-bar>
+          <mat-card-content>
+            <div 
+              class="file-upload-container"
+              [class.error]="hasError"
+              (dragover)="onDragOver($event)"
+              (drop)="onDrop($event)"
+              (click)="fileInput.click()">
+              <input
+                #fileInput
+                type="file"
+                style="display: none"
+                (change)="onFileSelected($event)"
+                accept=".png,.jpg,.jpeg,.svg">
+              <img 
+                [src]="hasError ? 'assets/icons/error.svg' : 'assets/icons/upload.svg'"
+                [alt]="hasError ? 'Erreur' : 'Télécharger'"
+                class="upload-icon"
+              >
+              <p class="upload-text">{{ hasError ? errorMessage : 'Glissez-déposez votre fichier ici ou cliquez pour sélectionner' }}</p>
+              <p class="supported-formats">Formats supportés: PNG, JPG, SVG</p>
+            </div>
+            
+            <div class="progress-container" *ngIf="uploading">
+              <p class="upload-status">Téléchargement en cours... {{uploadProgress}}%</p>
+              <mat-progress-bar
+                mode="determinate"
+                [value]="uploadProgress">
+              </mat-progress-bar>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <img src="assets/icons/speed.svg" alt="Rapide" class="feature-icon">
+            <h3>Conversion Rapide</h3>
+            <p>Transformez vos designs en quelques secondes</p>
           </div>
-        </mat-card-content>
-      </mat-card>
+          <div class="feature-card">
+            <img src="assets/icons/quality.svg" alt="Qualité" class="feature-icon">
+            <h3>Haute Qualité</h3>
+            <p>Résultats professionnels garantis</p>
+          </div>
+          <div class="feature-card">
+            <img src="assets/icons/edit.svg" alt="Éditable" class="feature-icon">
+            <h3>Entièrement Éditable</h3>
+            <p>Personnalisez vos modèles 3D</p>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
-    .upload-container {
-      min-height: calc(100vh - 64px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+    .upload-page {
+      min-height: 80vh;
       background-color: var(--background-color);
+      padding: 80px 5px;
+    }
+
+    .hero-section {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 60px;
+    }
+
+    .logo-container {
+      margin-bottom: 24px;
+    }
+
+    .logo-3d {
+      width: 130px;
+      height: 130px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .main-title {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 24px;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .description {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    .upload-container {
+      max-width: 1500px;
+      margin: 0 auto;
     }
 
     .upload-card {
       width: 100%;
-      max-width: 600px;
-      padding: 32px;
-      margin: auto;
+      max-width: 700px;
+      padding: 15px;
+      margin: 0 auto 1px;
+      background-color: var(--surface-color);
     }
 
     .file-upload-container {
       background-color: var(--surface-color);
       border: 2px dashed var(--border-color);
       border-radius: 12px;
-      padding: 40px 24px;
+      padding: 30px 24px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      margin: 24px 0;
+      margin: 44px 0;
     }
 
     .file-upload-container:hover {
@@ -129,12 +195,69 @@ import { Router } from '@angular/router';
       font-weight: 500;
     }
 
-    mat-card-title {
-      color: var(--primary-color) !important;
-      font-size: 1.5rem !important;
-      margin-bottom: 8px !important;
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 60px;
     }
+
+    .feature-card {
+      background-color: var(--surface-color);
+      padding: 24px;
+      border: 2px dashed var(--border-color);
+      border-radius: 30px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      color: var(--primary-color);
+      margin-bottom: 8px;
+      font-size: 1.2rem;
+      
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
     @media (max-width: 768px) {
+      .main-title {
+        font-size: 2rem;
+      }
+
+      .description {
+        font-size: 1rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
       .upload-card {
         padding: 24px;
       }

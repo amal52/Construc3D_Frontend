@@ -140,23 +140,23 @@ import { Router } from '@angular/router';
       </mat-card>
 
       <div class="preview-panel">
-        <div class="preview-container">
-          <div class="preview-header">
-            <h2>Votre modèle est désormais prêt </h2>
-            <div class="view-controls">
-              <button mat-icon-button (click)="toggleRotation()">
-                <mat-icon>1</mat-icon>
-              </button>
-              <button mat-icon-button (click)="resetView()">
-                <mat-icon>2</mat-icon>
-              </button>
-            </div>
+      <div class="preview-container">
+        <div class="preview-header">
+          <h2>Votre modèle est désormais prêt</h2>
+          <div class="view-controls">
+            <button mat-icon-button (click)="toggleRotation()">
+              <img src="/assets/icons/toggle_rotation.svg"  class="action-icon">
+            </button>
+            <button mat-icon-button (click)="resetView()">
+              <img src="/assets/icons/reset_view.svg" alt="Réinitialiser Vue" class="action-icon">
+            </button>
           </div>
+        </div>
           <div class="preview-content">
             <!-- Le contenu Three.js sera rendu ici -->
             <div class="preview-placeholder">
-              <mat-icon>3d_rotation</mat-icon>
-              <p>Chargement du modèle 3D...</p>
+            <img src="/assets/icons/3d_rotation.svg" alt="Réinitialiser Vue" class="action-icon">
+            <p>Chargement du modèle 3D...</p>
             </div>
           </div>
         </div>

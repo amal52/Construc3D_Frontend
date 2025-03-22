@@ -5,6 +5,7 @@ import { Component } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { routes } from './app/app.routes';
@@ -18,20 +19,26 @@ import { ThemeService } from './app/services/theme.service';
     RouterOutlet,
     MatToolbarModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule
   ],
   template: `
     <mat-toolbar color="primary">
       <span>Construc3D</span>
       <span class="toolbar-spacer"></span>
-      <button mat-icon-button (click)="toggleTheme()" class="theme-toggle">
-        <img 
-          [src]="(themeService.isDarkTheme$ | async) ? 'assets/icons/sun.svg' : 'assets/icons/moon.svg'"
-          [class.dark]="themeService.isDarkTheme$ | async"
-          alt="Theme toggle"
-          class="theme-icon"
-        >
-      </button>
+      
+      <button mat-icon-button [matMenuTriggerFor]="themeMenu">
+      <img src="assets/icons/edit.svg" alt="Qualité" class="feature-icon">
+
+</button>
+      
+      <mat-menu #themeMenu="matMenu">
+        <button mat-menu-item 
+          *ngFor="let theme of themeService.availableThemes" 
+          (click)="themeService.setTheme(theme)">
+          {{ theme }}
+        </button>
+      </mat-menu>
     </mat-toolbar>
     <router-outlet></router-outlet>
   `,
@@ -46,14 +53,8 @@ import { ThemeService } from './app/services/theme.service';
       align-items: center;
     }
 
-    .theme-icon {
-      width: 24px;
-      height: 24px;
-      filter: invert(1);
-    }
-
-    .theme-icon.dark {
-      filter: invert(0);
+    mat-icon {
+      color: white; 
     }
 
     .theme-toggle {
@@ -63,10 +64,6 @@ import { ThemeService } from './app/services/theme.service';
 })
 export class App {
   constructor(public themeService: ThemeService) {}
-
-  toggleTheme() {
-    this.themeService.toggleTheme();
-  }
 }
 
 bootstrapApplication(App, {
