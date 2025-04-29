@@ -1,0 +1,44 @@
+/* Components Adaptés */
+:root[data-theme="theme3"] {
+    --primary-color: #504B38;
+    --accent-color: #B9B28A;
+    --secondary-color: #F8F3D9;
+    --tertiary-color: #EBE5C2;
+    --dark-color: #504B38;
+    --light-color: #F8F3D9;
+    --warn-color: #B28A5C;
+
+/* Components Adaptés */
+
+    --background-color: var(--secondary-color);
+    --surface-color: #6B6550;
+    --text-primary: var(--secondary-color);
+    --text-secondary: var(--primary-color);
+    --border-color: var(--accent-color);
+    --hover-color: #5A5542;
+    --active-color: var(--accent-color);
+    --disabled-color: #8E8874;
+    --shadow-color: rgba(80, 75, 56, 0.2);
+  }
+/* Components Adaptés */
+  :root[data-theme="theme3"] .mat-toolbar {
+    background-color: var(--surface-color) !important;
+    border-bottom: 2px solid var(--accent-color);
+  }  
+  :root[data-theme="theme3"] .mat-card {
+    background-color: var(--surface-color) !important;
+    border: 1px solid var(--accent-color);
+  } 
+  :root[data-theme="theme3"] .mat-mdc-button {
+    --mdc-filled-button-container-color: var(--accent-color);
+    --mdc-filled-button-label-text-color: var(--dark-color);
+  } 
+  :root[data-theme="theme3"] .mat-icon {
+    color: var(--tertiary-color);
+  } 
+  :root[data-theme="theme3"] .progress-container {
+    background-color: rgba(80, 75, 56, 0.1);
+  }
+  :root[data-theme="theme3"] .progress-container {
+    background-color: rgba(80, 75, 56, 0.1);
+  }

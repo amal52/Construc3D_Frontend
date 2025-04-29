@@ -11,8 +11,8 @@
   /* Semantic Colors */
   --background-color: var(--dark-color);
   --surface-color: #1A0D06;
-  --text-primary: var(--secondary-color);
-  --text-secondary: var(--primary-color);
+  --text-primary: var(--light-color);
+  --text-secondary: var(--light-colorr);
   --border-color: var(--accent-color);
   --hover-color: var(--tertiary-color);
   --active-color: var(--primary-color);

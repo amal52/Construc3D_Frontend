@@ -5,30 +5,28 @@ import { BehaviorSubject } from 'rxjs';
     providedIn: 'root'
 })
 export class ThemeService {
-    private isDarkTheme = new BehaviorSubject<boolean>(false);
-    isDarkTheme$ = this.isDarkTheme.asObservable();
+    private currentTheme = new BehaviorSubject<string>('light');
+    currentTheme$ = this.currentTheme.asObservable();
+    availableThemes = ['dark', 'light', 'theme2', 'theme3'];
 
-constructor() {
-    // Charger le thème sauvegardé
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        this.setDarkTheme(true);
+    constructor() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme && this.availableThemes.includes(savedTheme)) {
+            this.setTheme(savedTheme);
+        } else {
+            this.setTheme('light');
+        }
     }
-}
 
-toggleTheme() {
-    this.isDarkTheme.next(!this.isDarkTheme.value);
-    this.updateTheme();
-}
+    setTheme(themeName: string) {
+        if (this.availableThemes.includes(themeName)) {
+            this.currentTheme.next(themeName);
+            this.updateTheme(themeName);
+        }
+    }
 
-private setDarkTheme(isDark: boolean) {
-    this.isDarkTheme.next(isDark);
-    this.updateTheme();
-}
-
-private updateTheme() {
-    const isDark = this.isDarkTheme.value;
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
+    private updateTheme(themeName: string) {
+        document.documentElement.setAttribute('data-theme', themeName);
+        localStorage.setItem('theme', themeName);
+    }
 }

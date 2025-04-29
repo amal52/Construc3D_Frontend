@@ -1,0 +1,50 @@
+/* Theme 2 Variables - Nature Verdoyante */
+:root[data-theme="theme2"] {
+    --primary-color: #41644A;
+    --accent-color: #E9762B;
+    --secondary-color: #F1F0E9;
+    --tertiary-color: #0D4715;
+    --dark-color: #0D4715;
+    --light-color: #F1F0E9;
+    --warn-color: #E9762B;
+    
+    /* Semantic Colors */
+    --background-color: var(--light-color);
+    --surface-color: #2A4D32;
+    --text-primary: #0D4715;
+    --text-secondary: #41644A;
+    --border-color: var(--accent-color);
+    --hover-color: #1E3A24;
+    --active-color: var(--primary-color);
+    --disabled-color: #5C7D64;
+    --shadow-color: rgba(13, 71, 21, 0.3);
+  }
+  
+  /* Components Adaptés */
+  :root[data-theme="theme2"] .mat-toolbar {
+    background-color: var(--primary-color) !important;
+    color: var(--secondary-color) !important;
+    border-bottom: 2px solid var(--accent-color);
+  }
+  
+  :root[data-theme="theme2"] .mat-card {
+    background-color: var(--surface-color) !important;
+    color: var(--secondary-color) !important;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 4px 16px var(--shadow-color) !important;
+  }
+  
+  :root[data-theme="theme2"] .mat-mdc-button {
+    --mdc-filled-button-container-color: var(--accent-color);
+    --mdc-filled-button-label-text-color: var(--light-color);
+    --mdc-outlined-button-outline-color: var(--border-color);
+  }
+  
+  :root[data-theme="theme2"] .mat-icon {
+    color: var(--accent-color);
+  }
+  
+  :root[data-theme="theme2"] .progress-container {
+    background-color: rgba(65, 100, 74, 0.1);
+  }
+  
