@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { Component } from '@angular/core';
+import { Component} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,9 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { routes } from './app/app.routes';
 import { ThemeService } from './app/services/theme.service';
+import { FirebaseService } from './app/services/firebase.service';
+import { provideHttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-root',
@@ -20,7 +23,8 @@ import { ThemeService } from './app/services/theme.service';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    
   ],
   template: `
     <mat-toolbar color="primary">
@@ -63,13 +67,17 @@ import { ThemeService } from './app/services/theme.service';
   `]
 })
 export class App {
-  constructor(public themeService: ThemeService) {}
-}
+  constructor(
+    public themeService: ThemeService,
+  ) {}
 
+}
 bootstrapApplication(App, {
   providers: [
     provideRouter(routes),
     provideAnimations(),
-    ThemeService
+    ThemeService,
+    provideHttpClient(),// Activer HttpClient
+
   ]
 }).catch(err => console.error(err));

@@ -7,6 +7,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { UploadDialogComponent } from './upload-dialog.component';
+import { UploadService } from '../../services/upload.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-upload',
@@ -26,40 +29,32 @@ import { Router } from '@angular/router';
         <div class="logo-container">
           <img src="assets/icons/3d.png" alt="Logo 3D" class="logo-3d">
         </div>
-        <h1 class="main-title">Transformez vos Designs 2D en Modèles 3D</h1>
-        <p class="description">
-          Notre plateforme utilise une technologie d'IA avancée pour convertir instantanément 
-          vos créations 2D en modèles 3D époustouflants. Idéal pour les designers, 
-          architectes et créatifs qui souhaitent donner vie à leurs projets.
-        </p>
+        <div class="hero-content">
+          <h1 class="main-title">Transformez vos Designs 2D en Modèles 3D</h1>
+          <p class="description">
+            Notre plateforme utilise une technologie d'IA avancée pour convertir instantanément 
+            vos créations 2D en modèles 3D époustouflants. Idéal pour les designers, 
+            architectes et créatifs qui souhaitent donner vie à leurs projets.
+          </p>
+        </div>
       </div>
 
       <div class="upload-container">
-        <mat-card class="upload-card">
+        <mat-card class="upload-card" (click)="openUploadDialog()">
           <mat-card-header>
-            <mat-card-title>Soumettre un Design 2D</mat-card-title>
             <mat-card-subtitle>Transformez vos créations 2D en modèles 3D</mat-card-subtitle>
           </mat-card-header>
           
           <mat-card-content>
             <div 
               class="file-upload-container"
-              [class.error]="hasError"
-              (dragover)="onDragOver($event)"
-              (drop)="onDrop($event)"
-              (click)="fileInput.click()">
-              <input
-                #fileInput
-                type="file"
-                style="display: none"
-                (change)="onFileSelected($event)"
-                accept=".png,.jpg,.jpeg,.svg">
+              [class.error]="hasError">
               <img 
                 [src]="hasError ? 'assets/icons/error.svg' : 'assets/icons/upload.svg'"
                 [alt]="hasError ? 'Erreur' : 'Télécharger'"
                 class="upload-icon"
               >
-              <p class="upload-text">{{ hasError ? errorMessage : 'Glissez-déposez votre fichier ici ou cliquez pour sélectionner' }}</p>
+              <p class="upload-text">{{ hasError ? errorMessage : 'Cliquez pour commencer le téléchargement' }}</p>
               <p class="supported-formats">Formats supportés: PNG, JPG, SVG</p>
             </div>
             
@@ -95,69 +90,82 @@ import { Router } from '@angular/router';
   `,
   styles: [`
     .upload-page {
-      min-height: 80vh;
+      min-height: 100vh;
       background-color: var(--background-color);
-      padding: 80px 5px;
+      padding: 40px 20px;
     }
 
     .hero-section {
-      text-align: center;
-      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 1200px;
       margin: 0 auto 60px;
+      padding: 0 20px;
+      text-align: center;
     }
 
     .logo-container {
-      margin-bottom: 24px;
+      margin-bottom: 30px;
+    }
+    
+    .logo-3d {
+      width: 180px;
+      height: 180px;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 10px 20px rgba(228, 153, 91, 0.2));
     }
 
-    .logo-3d {
-      width: 130px;
-      height: 130px;
-      animation: float 3s ease-in-out infinite;
+    .hero-content {
+      max-width: 800px;
     }
 
     .main-title {
       font-size: 2.5rem;
       color: var(--primary-color);
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       font-weight: 700;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      line-height: 1.2;
     }
 
     .description {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: var(--text-secondary);
       line-height: 1.6;
       margin-bottom: 40px;
     }
 
     .upload-container {
-      max-width: 1500px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
     .upload-card {
-      width: 100%;
+      width: 80%;
       max-width: 700px;
-      padding: 15px;
-      margin: 0 auto 1px;
+      max-height: 500px;
+      padding: 25px;
+      margin: 0 auto 30px;
       background-color: var(--surface-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .upload-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
     .file-upload-container {
       background-color: var(--surface-color);
       border: 2px dashed var(--border-color);
       border-radius: 12px;
-      padding: 30px 24px;
+      padding: 40px 24px;
       text-align: center;
-      cursor: pointer;
       transition: all 0.3s ease;
-      margin: 44px 0;
-    }
-
-    .file-upload-container:hover {
-      border-color: var(--primary-color);
-      transform: translateY(-2px);
+      margin: 24px 0;
     }
 
     .file-upload-container.error {
@@ -205,19 +213,19 @@ import { Router } from '@angular/router';
     .feature-card {
       background-color: var(--surface-color);
       padding: 24px;
-      border: 2px dashed var(--border-color);
-      border-radius: 30px;
+      border-radius: 12px;
       text-align: center;
       transition: transform 0.3s ease;
+      border: 2px dashed var(--border-color);
     }
 
     .feature-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-9px);
     }
 
     .feature-icon {
-      width: 48px;
-      height: 48px;
+      width: 38px;
+      height: 38px;
       margin-bottom: 16px;
     }
 
@@ -225,7 +233,6 @@ import { Router } from '@angular/router';
       color: var(--primary-color);
       margin-bottom: 8px;
       font-size: 1.2rem;
-      
     }
 
     .feature-card p {
@@ -235,17 +242,21 @@ import { Router } from '@angular/router';
 
     @keyframes float {
       0% {
-        transform: translateY(0px);
+        transform: translateY(0px) rotate(0deg);
       }
       50% {
-        transform: translateY(-10px);
+        transform: translateY(-20px) rotate(5deg);
       }
       100% {
-        transform: translateY(0px);
+        transform: translateY(0px) rotate(0deg);
       }
     }
 
     @media (max-width: 768px) {
+      .hero-section {
+        padding: 0;
+      }
+
       .main-title {
         font-size: 2rem;
       }
@@ -259,11 +270,17 @@ import { Router } from '@angular/router';
       }
 
       .upload-card {
+        width: 90%;
         padding: 24px;
       }
 
       .file-upload-container {
         padding: 32px 16px;
+      }
+
+      .logo-3d {
+        width: 200px;
+        height: 200px;
       }
     }
   `]
@@ -273,75 +290,114 @@ export class UploadComponent {
   uploadProgress = 0;
   hasError = false;
   errorMessage = '';
-  readonly MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-  readonly ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/svg+xml'];
+  private readonly ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/svg+xml'];
+  private readonly MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
   constructor(
-    private router: Router,
+    private uploadService: UploadService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
-  ) {}
-
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  onDrop(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    const files = event.dataTransfer?.files;
-    if (files?.length) {
-      this.validateAndHandleFile(files[0]);
-    }
-  }
-
-  onFileSelected(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      this.validateAndHandleFile(file);
-    }
-  }
-
-  validateAndHandleFile(file: File) {
-    this.hasError = false;
-    this.errorMessage = '';
-
-    if (!this.ALLOWED_TYPES.includes(file.type)) {
-      this.showError('Format de fichier non supporté. Utilisez PNG, JPG ou SVG.');
-      return;
-    }
-
-    if (file.size > this.MAX_FILE_SIZE) {
-      this.showError('Fichier trop volumineux. Taille maximale : 10MB');
-      return;
-    }
-
-    this.handleFile(file);
-  }
-
-  showError(message: string) {
-    this.hasError = true;
-    this.errorMessage = message;
-    this.snackBar.open(message, 'Fermer', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
+    private dialog: MatDialog,
+    private router: Router
+  ) {
+    this.uploadService.uploadProgress$.subscribe(progress => {
+      this.uploadProgress = progress;
     });
   }
 
-  handleFile(file: File) {
+  openFileInput() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.png,.jpg,.jpeg,.svg';
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (file) {
+        this.validateAndHandleFile(file);
+      }
+    };
+    input.click();
+  }
+  openUploadDialog() {
+    const dialogRef = this.dialog.open(UploadDialogComponent, {
+      width: '500px',
+      panelClass: 'upload-dialog'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'local') {
+        this.openFileInput();
+      }
+    });
+  }
+
+  private async validateAndHandleFile(file: File): Promise<void> {
+    try {
+      if (!file) {
+        throw new Error('AUCUN_FICHIER');
+      }
+      this.hasError = false;
+      this.errorMessage = '';
+
+      if (!this.ALLOWED_TYPES.includes(file.type)) {
+        throw new Error('FORMAT_NON_SUPPORTE');
+      }
+      if (file.size > this.MAX_FILE_SIZE) {
+        throw new Error('TAILLE_MAX_DEPASSEE');
+      }
+
+      await this.handleFile(file);
+    } catch (error) {
+      this.handleValidationError(error);
+    }
+  }
+  private handleValidationError(error: unknown): void {
+    const errorMapping: { [key: string]: string } = {
+      'AUCUN_FICHIER': 'Aucun fichier sélectionné.',
+      'FORMAT_NON_SUPPORTE': 'Format de fichier non supporté. Utilisez PNG, JPG ou SVG.',
+      'TAILLE_MAX_DEPASSEE': 'Fichier trop volumineux. Taille maximale : 10MB',
+      'default': 'Erreur lors du traitement du fichier'
+    };
+
+    const message = error instanceof Error && error.message in errorMapping
+      ? errorMapping[error.message]
+      : errorMapping['default'];
+
+    this.showError(message);
+  }
+
+  private async handleFile(file: File): Promise<void> {
     this.uploading = true;
     this.uploadProgress = 0;
-    
-    const interval = setInterval(() => {
-      if (this.uploadProgress < 100) {
-        this.uploadProgress += 10;
-      } else {
-        clearInterval(interval);
-        setTimeout(() => {
-          this.router.navigate(['/customize']);
-        }, 500);
+  
+    try {
+      const validation = this.uploadService.validateFile(file);
+      if (!validation.isValid) {
+        this.showError(validation.error || 'Validation du fichier échouée.');
+        return;
       }
-    }, 500);
+  
+      const uploadStream = this.uploadService.uploadLocalFile(file);
+  
+      const response = await lastValueFrom(uploadStream);
+      console.log('Réponse du service de téléchargement:', response);
+  
+      if (response?.success) {
+        this.snackBar.open('Fichier téléchargé avec succès!', 'Fermer', { duration: 5000 });
+        this.router.navigate(['/customize']);
+      } else {
+        throw new Error('La réponse du serveur indique un échec.');
+      }
+    } catch (error: any) { // Notez le changement ici pour 'any'
+      console.error('Erreur complète:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack})
+    } finally {
+      this.uploading = false;
+    }
+  }
+
+  private showError(message: string): void {
+    this.hasError = true;
+    this.errorMessage = message;
+    this.snackBar.open(message, 'Fermer', { duration: 5000 });
   }
 }
