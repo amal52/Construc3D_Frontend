@@ -15,21 +15,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import screenfull from 'screenfull';
-
-interface ModelVersion {
-  id: string;
-  name: string;
-  date: string;
-  settings: any;
-  notes?: string[];
-  objUrl?: string;
-  glbUrl?: string;
-  thumbnail?: string;
-  images?: string[];
-}
+import { ModelSettingsService, ModelSettings } from '../../services/model-settings.service';
 
 interface ModelNote {
   id: string;
@@ -68,6 +58,7 @@ interface ModelNote {
           </div>
 
           <mat-accordion>
+            <!-- Appearance Panel -->
             <mat-expansion-panel expanded>
               <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -167,34 +158,24 @@ interface ModelNote {
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>history</mat-icon>
-                  Versions et Images
+                  Versions
                 </mat-panel-title>
               </mat-expansion-panel-header>
 
               <div class="versions-list">
                 <mat-list>
-                  <mat-list-item *ngFor="let version of versions" (click)="loadVersion(version)">
-                    <mat-icon matListItemIcon>restore</mat-icon>
+                  <mat-list-item *ngFor="let version of versions" (click)="loadVersion(version.settings)">
+                    <img matListItemAvatar [src]="version.thumbnail" alt="Version thumbnail">
                     <div matListItemTitle>{{version.name}}</div>
                     <div matListItemLine>{{version.date | date}}</div>
-                    <div class="version-images" *ngIf="version.images?.length">
-                      <img *ngFor="let img of version.images" [src]="img" alt="Version image" class="version-thumbnail">
-                    </div>
                   </mat-list-item>
                 </mat-list>
               </div>
 
-              <div class="version-actions">
-                <input type="file" #imageInput accept="image/*" multiple (change)="onImagesSelected($event)" style="display: none">
-                <button mat-stroked-button (click)="imageInput.click()">
-                  <mat-icon>add_photo_alternate</mat-icon>
-                  Ajouter des images
-                </button>
-                <button mat-stroked-button (click)="saveVersion()">
-                  <mat-icon>save</mat-icon>
-                  Sauvegarder la version
-                </button>
-              </div>
+              <button mat-raised-button color="primary" (click)="saveVersion()" class="mt-3">
+                <mat-icon>save</mat-icon>
+                Sauvegarder la version actuelle
+              </button>
             </mat-expansion-panel>
 
             <!-- Notes Panel -->
@@ -229,7 +210,7 @@ interface ModelNote {
             </mat-expansion-panel>
           </mat-accordion>
 
-    
+      
         </mat-sidenav>
 
         <mat-sidenav-content>
@@ -254,22 +235,27 @@ interface ModelNote {
                 </button>
               </div>
 
-              <div class="playback-controls">
-                <button mat-icon-button (click)="toggleRotation()" matTooltip="Rotation">
-                  <mat-icon>{{isRotating ? 'pause' : 'play_arrow'}}</mat-icon>
-                </button>
-                <button mat-icon-button (click)="resetView()" matTooltip="Réinitialiser">
-                  <mat-icon>restart_alt</mat-icon>
-                </button>
-                <button mat-icon-button (click)="toggleFullscreen()" matTooltip="Plein écran">
-                  <mat-icon>{{isFullscreen ? 'fullscreen_exit' : 'fullscreen'}}</mat-icon>
-                </button>
-                <button mat-raised-button  (click)="onFinish()">
-                  <mat-icon>check</mat-icon>
-                  Terminer
-                </button>
-              </div>
+               <div class="playback-controls">
+            <button mat-icon-button (click)="toggleRotation()" matTooltip="Rotation">
+              <mat-icon>{{isRotating ? 'pause' : 'play_arrow'}}</mat-icon>
+            </button>
+            <button mat-icon-button (click)="resetView()" matTooltip="Réinitialiser">
+              <mat-icon>restart_alt</mat-icon>
+            </button>
+            <button mat-icon-button (click)="toggleFullscreen()" matTooltip="Plein écran">
+              <mat-icon>{{isFullscreen ? 'fullscreen_exit' : 'fullscreen'}}</mat-icon>
+            </button>
+            <button mat-raised-button color="primary" class="brown-button" (click)="resetChanges()">
+              <mat-icon>restart_alt</mat-icon>
+              Réinitialiser
+            </button>
+            <button mat-raised-button color="primary" class="brown-button" (click)="onFinish()">
+              <mat-icon>check</mat-icon>
+              Terminer
+            </button>
+      </div>
             </div>
+
             <div class="viewer-content">
               <div class="loading-indicator" *ngIf="!modelLoaded">
                 <mat-icon>hourglass_empty</mat-icon>
@@ -299,7 +285,21 @@ interface ModelNote {
     mat-sidenav-container {
       height: 100%;
     }
+.brown-button {
+  background-color: #8B4513 !important;
+  color: white !important;
+  margin-left: 8px;
+}
 
+.brown-button:hover {
+  background-color: #A0522D !important;
+}
+
+.playback-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
     .settings-panel {
       width: 320px;
       background: var(--surface-color);
@@ -402,6 +402,7 @@ interface ModelNote {
       background-size: 20px 20px;
       background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     }
+
     .model-viewer {
       position: absolute;
       top: 0;
@@ -409,6 +410,7 @@ interface ModelNote {
       width: 100%;
       height: 100%;
     }
+
     .loading-indicator {
       position: absolute;
       top: 50%;
@@ -419,6 +421,7 @@ interface ModelNote {
       align-items: center;
       gap: 16px;
     }
+
     .loading-indicator mat-icon {
       font-size: 48px;
       width: 48px;
@@ -426,32 +429,13 @@ interface ModelNote {
       animation: spin 2s infinite linear;
     }
 
-    .versions-list,
-    .notes-list {
+    .versions-list {
       max-height: 200px;
       overflow-y: auto;
     }
 
-    .version-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .mt-3 {
       margin-top: 16px;
-    }
-
-    .version-images {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      overflow-x: auto;
-    }
-
-    .version-thumbnail {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 4px;
-      cursor: pointer;
     }
 
     @keyframes spin {
@@ -471,7 +455,7 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sidenav') sidenav: any;
 
   // Model properties
-  mainColor: string = '#f4f1ec';
+  mainColor: string = '#FFA000';
   selectedTexture: string = 'smooth';
   shininess: number = 50;
   lightIntensity: number = 75;
@@ -481,16 +465,10 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
   animationType: string = 'rotate';
   isRotating: boolean = true;
   isFullscreen: boolean = false;
-
-  // URLs
-  objUrl!: string;
-  glbUrl!: string;
-
-  // State
   modelLoaded: boolean = false;
   newNote: string = '';
   notes: ModelNote[] = [];
-  versions: ModelVersion[] = [];
+  versions: any[] = [];
 
   // Three.js objects
   private scene!: THREE.Scene;
@@ -502,15 +480,16 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
   private ambientLightObj!: THREE.AmbientLight;
   private directionalLight!: THREE.DirectionalLight;
   private pointLight!: THREE.PointLight;
-  private grid!: THREE.GridHelper;
-  private axes!: THREE.AxesHelper;
-  
-  // Storage key for versions
-  private readonly STORAGE_KEY = 'modelVersions';
 
-  constructor(private router: Router) {
-    this.loadVersions();
-  }
+  // URLs
+  objUrl!: string;
+  glbUrl!: string;
+
+  constructor(
+    private router: Router,
+    private modelSettingsService: ModelSettingsService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     const state = window.history.state;
@@ -523,19 +502,17 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.objUrl = state.objUrl;
     this.glbUrl = state.glbUrl;
-    
-    // Load settings from state if available
-    if (state.settings) {
-      this.applySettings(state.settings);
-    }
-    // Load versions from state if available
-    if (state.versions && Array.isArray(state.versions)) {
-      this.versions = [...this.versions, ...state.versions].filter((version, index, self) => 
-        index === self.findIndex(v => v.id === version.id)
-      );
-      this.saveVersions();
-    }
+
+    // Load settings from service
+    this.modelSettingsService.getAll().subscribe(settings => {
+      if (settings.length > 0) {
+        const latestSettings = settings[0];
+        this.applySettings(latestSettings);
+      }
+      this.loadVersions();
+    });
   }
+
   ngAfterViewInit(): void {
     if (!this.viewerContainer) {
       setTimeout(() => this.ngAfterViewInit(), 100);
@@ -545,15 +522,15 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.initThreeJS();
     this.loadModel();
   }
+
   ngOnDestroy(): void {
     if (this.animationId !== null) {
       cancelAnimationFrame(this.animationId);
     }
-    window.removeEventListener('resize', this.onWindowResize.bind(this));
     this.cleanupThreeJS();
   }
+
   private initThreeJS(): void {
-    // Create scene with gradient background
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xeeeeee);
 
@@ -566,56 +543,30 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.renderer = new THREE.WebGLRenderer({ 
       antialias: true,
-      alpha: true,
-      logarithmicDepthBuffer: true
+      alpha: true
     });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.0;
     
     this.viewerContainer.nativeElement.appendChild(this.renderer.domElement);
 
-    // Enhanced controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
-    this.controls.rotateSpeed = 0.8;
-    this.controls.zoomSpeed = 1.2;
-    this.controls.panSpeed = 0.8;
-    this.controls.minDistance = 2;
-    this.controls.maxDistance = 20;
-
-    // Add grid helper
-    this.grid = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
-    this.scene.add(this.grid);
-
-    // Add axes helper
-    this.axes = new THREE.AxesHelper(5);
-    this.scene.add(this.axes);
 
     this.setupLights();
     window.addEventListener('resize', this.onWindowResize.bind(this));
   }
+
   private setupLights(): void {
-    // Ambient light
     this.ambientLightObj = new THREE.AmbientLight(0xffffff, this.ambientLight / 100);
     this.scene.add(this.ambientLightObj);
-    // Main directional light with enhanced shadows
+
     this.directionalLight = new THREE.DirectionalLight(0xffffff, this.lightIntensity / 100);
     this.directionalLight.position.set(5, 5, 5);
-    this.directionalLight.castShadow = true;
-    this.directionalLight.shadow.mapSize.width = 2048;
-    this.directionalLight.shadow.mapSize.height = 2048;
-    this.directionalLight.shadow.camera.near = 0.5;
-    this.directionalLight.shadow.camera.far = 500;
-    this.directionalLight.shadow.bias = -0.0001;
     this.scene.add(this.directionalLight);
 
-    // Additional rim light
     this.pointLight = new THREE.PointLight(0x0088ff, this.lightIntensity / 200);
     this.pointLight.position.set(-5, 5, -5);
     this.scene.add(this.pointLight);
@@ -643,6 +594,7 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       (error) => {
         console.error('Erreur de chargement:', error);
+        this.modelLoaded = false;
       }
     );
   }
@@ -664,9 +616,10 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateModel(): void {
     if (!this.model) return;
+
     const color = new THREE.Color(this.mainColor);
     const roughness = this.selectedTexture === 'rough' ? 0.8 :
-    this.selectedTexture === 'metallic' ? 0.1 : 0.3;
+                     this.selectedTexture === 'metallic' ? 0.1 : 0.3;
     const metalness = this.selectedTexture === 'metallic' ? 0.8 : 0.1;
 
     this.model.traverse((child) => {
@@ -677,25 +630,19 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
             mesh.material = new THREE.MeshStandardMaterial({
               color: color,
               roughness: roughness,
-              metalness: metalness,
-              envMapIntensity: 1.0,
-              emissive: new THREE.Color(0x000033),
-              emissiveIntensity: 0.1
+              metalness: metalness
             });
           } else {
             (mesh.material as THREE.MeshStandardMaterial).color = color;
             (mesh.material as THREE.MeshStandardMaterial).roughness = roughness;
             (mesh.material as THREE.MeshStandardMaterial).metalness = metalness;
-            (mesh.material as THREE.MeshStandardMaterial).emissive = new THREE.Color(0x000033);
-            (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.1;
             mesh.material.needsUpdate = true;
           }
-          mesh.castShadow = true;
-          mesh.receiveShadow = true;
         }
       }
     });
   }
+
   updateLighting(): void {
     if (this.ambientLightObj) {
       this.ambientLightObj.intensity = this.ambientLight / 100;
@@ -742,7 +689,7 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
   }
-  // View Controls
+
   setView(view: string): void {
     if (!this.model) return;
 
@@ -785,119 +732,15 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Create a thumbnail from the current view
   private createThumbnail(): string {
-    if (!this.renderer) return '';
-    
-    // Temporarily disable rotation for the screenshot
-    const wasRotating = this.isRotating;
-    this.isRotating = false;
-    
-    // Render the current view
-    this.renderer.render(this.scene, this.camera);
-    
-    // Get the data URL from the canvas
-    const thumbnail = this.renderer.domElement.toDataURL('image/jpeg', 0.7);
-    
-    // Restore rotation state
-    this.isRotating = wasRotating;
-    
-    return thumbnail;
+    return this.renderer.domElement.toDataURL('image/jpeg', 0.7);
   }
 
-  // Version Management
   saveVersion(): void {
     const thumbnail = this.createThumbnail();
-    const version: ModelVersion = {
-      id: Date.now().toString(),
-      name: `Version ${this.versions.length + 1}`,
-      date: new Date().toISOString(),
-      objUrl: this.objUrl,
-      glbUrl: this.glbUrl,
-      thumbnail: thumbnail,
-      settings: {
-        color: this.mainColor,
-        texture: this.selectedTexture,
-        shininess: this.shininess,
-        lightIntensity: this.lightIntensity,
-        ambientLight: this.ambientLight,
-        shadowIntensity: this.shadowIntensity,
-        rotationSpeed: this.rotationSpeed,
-        animationType: this.animationType
-      }
-    };
-
-    this.versions.unshift(version);
-    this.saveVersions();
-  }
-
-  loadVersion(version: ModelVersion): void {
-    if (version.settings) {
-      this.applySettings(version.settings);
-      this.updateModel();
-      this.updateLighting();
-    }
-  }
-  
-  private applySettings(settings: any): void {
-    this.mainColor = settings.color || this.mainColor;
-    this.selectedTexture = settings.texture || this.selectedTexture;
-    this.shininess = settings.shininess || this.shininess;
-    this.lightIntensity = settings.lightIntensity || this.lightIntensity;
-    this.ambientLight = settings.ambientLight || this.ambientLight;
-    this.shadowIntensity = settings.shadowIntensity || this.shadowIntensity;
-    this.rotationSpeed = settings.rotationSpeed || this.rotationSpeed;
-    this.animationType = settings.animationType || this.animationType;
-  }
-
-  private loadVersions(): void {
-    const saved = localStorage.getItem(this.STORAGE_KEY);
-    if (saved) {
-      try {
-        this.versions = JSON.parse(saved);
-      } catch (e) {
-        console.error('Erreur de chargement des versions:', e);
-        this.versions = [];
-      }
-    }
-  }
-
-  private saveVersions(): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.versions));
-  }
-
-  onImagesSelected(event: any): void {
-    const files = event.target.files;
-    if (files) {
-      Array.from(files).forEach((file: any) => {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          const currentVersion = this.versions[0] || this.createNewVersion();
-          if (!currentVersion.images) {
-            currentVersion.images = [];
-          }
-          currentVersion.images.push(e.target.result);
-          this.saveVersions();
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  }
-
-  private createNewVersion(): ModelVersion {
-    const version: ModelVersion = {
-      id: Date.now().toString(),
-      name: `Version ${this.versions.length + 1}`,
-      date: new Date().toISOString(),
-      settings: this.getCurrentSettings(),
-      images: []
-    };
-    this.versions.unshift(version);
-    return version;
-  }
-
-  private getCurrentSettings(): any {
-    return {
+    
+    const settings: ModelSettings = {
+      name: `Version ${Date.now()}`,
       color: this.mainColor,
       texture: this.selectedTexture,
       shininess: this.shininess,
@@ -905,29 +748,64 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
       ambientLight: this.ambientLight,
       shadowIntensity: this.shadowIntensity,
       rotationSpeed: this.rotationSpeed,
-      animationType: this.animationType
+      animationType: this.animationType,
+      objUrl: this.objUrl,
+      glbUrl: this.glbUrl,
+      thumbnail: thumbnail,
+      notes: this.notes.map(note => note.text)
     };
+
+    this.modelSettingsService.create(settings).subscribe({
+      next: () => {
+        this.snackBar.open('Version sauvegardée avec succès', 'Fermer', {
+          duration: 3000
+        });
+        this.loadVersions();
+      },
+      error: (error) => {
+        console.error('Erreur lors de la sauvegarde:', error);
+        this.snackBar.open('Erreur lors de la sauvegarde', 'Fermer', {
+          duration: 3000
+        });
+      }
+    });
   }
 
-  downloadModel(): void {
-    if (this.objUrl) {
-      const link = document.createElement('a');
-      link.href = this.objUrl;
-      link.download = 'model.obj';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else if (this.glbUrl) {
-      const link = document.createElement('a');
-      link.href = this.glbUrl;
-      link.download = 'model.glb';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+  loadVersion(version: ModelSettings): void {
+    this.applySettings(version);
+    this.updateModel();
+    this.updateLighting();
   }
 
-  //Notes Management
+  private applySettings(settings: ModelSettings): void {
+    this.mainColor = settings.color;
+    this.selectedTexture = settings.texture;
+    this.shininess = settings.shininess;
+    this.lightIntensity = settings.lightIntensity;
+    this.ambientLight = settings.ambientLight;
+    this.shadowIntensity = settings.shadowIntensity;
+    this.rotationSpeed = settings.rotationSpeed;
+    this.animationType = settings.animationType;
+  }
+
+  private loadVersions(): void {
+    this.modelSettingsService.getAll().subscribe({
+      next: (settings) => {
+        this.versions = settings.map(s => ({
+          id: s.id!.toString(),
+          name: s.name,
+          date: s.createdAt?.toISOString() || new Date().toISOString(),
+          settings: s,
+          thumbnail: s.thumbnail,
+          notes: s.notes
+        }));
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des versions:', error);
+      }
+    });
+  }
+
   addNote(): void {
     if (!this.newNote.trim()) return;
 
@@ -946,7 +824,7 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   resetChanges(): void {
-    this.mainColor = '#f4f1ec';
+    this.mainColor = '#FFA000';
     this.selectedTexture = 'smooth';
     this.shininess = 50;
     this.lightIntensity = 75;
@@ -954,34 +832,46 @@ export class CustomizeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ambientLight = 30;
     this.rotationSpeed = 2;
     this.animationType = 'rotate';
-    this.isRotating = true;
     this.updateModel();
     this.updateLighting();
   }
 
   onFinish(): void {
-    // Create current version thumbnail for the gallery
     const thumbnail = this.createThumbnail();
-    
-    // Navigate to viewer with current settings and model data
-    this.router.navigate(['/viewer'], {
-      state: {
-        objUrl: this.objUrl,
-        glbUrl: this.glbUrl,
-        thumbnail: thumbnail,
-        modificationDate: new Date().toISOString(),
-        isModified: true,
-        settings: {
-          color: this.mainColor,
-          texture: this.selectedTexture,
-          shininess: this.shininess,
-          lightIntensity: this.lightIntensity,
-          ambientLight: this.ambientLight,
-          shadowIntensity: this.shadowIntensity,
-          rotationSpeed: this.rotationSpeed,
-          animationType: this.animationType
-        },
-        versions: this.versions
+    const currentSettings: ModelSettings = {
+      name: `Version finale ${new Date().toLocaleString()}`,
+      color: this.mainColor,
+      texture: this.selectedTexture,
+      shininess: this.shininess,
+      lightIntensity: this.lightIntensity,
+      ambientLight: this.ambientLight,
+      shadowIntensity: this.shadowIntensity,
+      rotationSpeed: this.rotationSpeed,
+      animationType: this.animationType,
+      objUrl: this.objUrl,
+      glbUrl: this.glbUrl,
+      thumbnail: thumbnail,
+      notes: this.notes.map(note => note.text),
+      isModified: true
+    };
+
+    this.modelSettingsService.create(currentSettings).subscribe({
+      next: () => {
+        this.router.navigate(['/viewer'], {
+          state: {
+            objUrl: this.objUrl,
+            glbUrl: this.glbUrl,
+            thumbnail: thumbnail,
+            settings: currentSettings,
+            isModified: true
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la sauvegarde finale:', error);
+        this.snackBar.open('Erreur lors de la finalisation', 'Fermer', {
+          duration: 3000
+        });
       }
     });
   }
