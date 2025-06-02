@@ -6,6 +6,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { GoogleDriveService } from '../../services/google-drive.service';
 
 @Component({
@@ -25,133 +26,216 @@ import { GoogleDriveService } from '../../services/google-drive.service';
         <p class="subtitle">Sélectionnez la source de votre image 2D</p>
       </div>
       
-      <div class="upload-options">
-        <div class="option-card" matRipple (click)="onLocalUpload()">
+      <div class="upload-options" [@staggerAnimation]="upload_options.length">
+        <div *ngFor="let option of upload_options; let i = index" 
+             class="option-card" 
+             matRipple 
+             (click)="option.action()"
+             [@cardAnimation]="{value: '', params: {delay: i * 100}}">
           <div class="option-icon">
-            <mat-icon>upload_file</mat-icon>
+            <img [src]="option.icon" [alt]="option.title">
           </div>
           <div class="option-content">
-            <h3>Depuis l'ordinateur</h3>
-            <p>Sélectionnez un fichier local</p>
-          </div>
-        </div>
-
-        <div class="option-card" matRipple (click)="onGoogleDriveUpload()">
-          <div class="option-icon">
-            <img src="assets/icons/google-drive.svg" alt="Google Drive">
-          </div>
-          <div class="option-content">
-            <h3>Depuis Google Drive</h3>
-            <p>Importez depuis votre Drive</p>
+            <h3>{{ option.title }}</h3>
+            <p>{{ option.description }}</p>
           </div>
         </div>
       </div>
 
       <div class="dialog-footer">
-        <button mat-button (click)="onClose()">Annuler</button>
+        <button mat-button class="cancel-button" (click)="onClose()">Annuler</button>
       </div>
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      border-radius: 90px;
+
+    }
+
     .upload-dialog {
-      padding: 24px;
-      max-width: 500px;
+      padding: 40px;
+      max-width: 600px;
       width: 100%;
+      border-radius: 40px;
+      background: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
     }
 
     .dialog-header {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 40px;
+      position: relative;
     }
 
     .dialog-header h2 {
-      color: var(--primary-color);
-      font-size: 24px;
-      margin-bottom: 8px;
+      color: #ff7a00;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
     }
 
     .subtitle {
-      color: var(--text-secondary);
+      color: #666;
       font-size: 16px;
+      font-weight: 400;
+      line-height: 1.5;
     }
 
     .upload-options {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: 24px;
+      margin-bottom: 32px;
+      position: relative;
     }
 
     .option-card {
-      background-color: var(--surface-color);
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
-      padding: 24px;
+      background: white;
+      border: 2px solid #ff7a00;
+      border-radius: 64px;
+      padding: 32px 24px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
     .option-card:hover {
-      border-color: var(--primary-color);
-      transform: translateY(-4px);
-      box-shadow: 0 4px 12px var(--shadow-color);
+      transform: translateY(-8px) scale(1.02);
+      border-color: #ff9500;
+      box-shadow: 0 20px 40px rgba(255, 122, 0, 0.1);
     }
 
     .option-icon {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 16px;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 122, 0, 0.1);
+      padding: 20px;
+      transition: all 0.4s ease;
     }
 
-    .option-icon mat-icon {
-      font-size: 36px;
-      width: 36px;
-      height: 36px;
-      color: var(--primary-color);
+    .option-card:hover .option-icon {
+      transform: scale(1.1) rotate(5deg);
+      background: rgba(255, 122, 0, 0.2);
     }
 
     .option-icon img {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
+      transition: all 0.4s ease;
+    }
+
+    .option-content {
+      position: relative;
+      z-index: 1;
     }
 
     .option-content h3 {
-      color: var(--text-primary);
-      font-size: 18px;
+      color: #ff7a00;
+      font-size: 20px;
+      font-weight: 600;
       margin-bottom: 8px;
+      transition: all 0.3s ease;
     }
 
     .option-content p {
-      color: var(--text-secondary);
+      color: #666;
       font-size: 14px;
+      line-height: 1.6;
       margin: 0;
+      transition: all 0.3s ease;
     }
 
     .dialog-footer {
       display: flex;
-      justify-content: flex-end;
-      margin-top: 16px;
+      justify-content: center;
+      margin-top: 32px;
     }
 
-    @media (max-width: 480px) {
+    .cancel-button {
+      color: #ff7a00;
+      font-weight: 500;
+      font-size: 16px;
+      padding: 12px 32px;
+      border: 2px solid #ff7a00;
+      border-radius: 16px;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .cancel-button:hover {
+      background: rgba(255, 122, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .upload-dialog {
+        padding: 32px;
+        border-radius: 30px;
+      }
+
       .upload-options {
         grid-template-columns: 1fr;
+        gap: 16px;
       }
 
       .option-card {
-        padding: 16px;
+        padding: 24px;
+      }
+
+      .dialog-header h2 {
+        font-size: 28px;
+      }
+
+      .option-icon {
+        width: 64px;
+        height: 64px;
       }
     }
-  `]
+  `],
+  animations: [
+    trigger('cardAnimation', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('400ms {{delay}}ms cubic-bezier(0.25, 0.8, 0.25, 1)', 
+          style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('staggerAnimation', [
+      transition('* => *', [])
+    ])
+  ]
 })
 export class UploadDialogComponent {
+  upload_options = [
+    {
+      title: 'Depuis l\'ordinateur',
+      description: 'Sélectionnez un fichier local',
+      icon: 'assets/icons/upload.svg',
+      action: () => this.onLocalUpload()
+    },
+    {
+      title: 'Depuis Google Drive',
+      description: 'Importez depuis votre Drive',
+      icon: 'assets/icons/google-drive.svg',
+      action: () => this.onGoogleDriveUpload()
+    }
+  ];
+
   constructor(
     private dialogRef: MatDialogRef<UploadDialogComponent>,
     private googleDriveService: GoogleDriveService,
@@ -168,9 +252,7 @@ export class UploadDialogComponent {
       if (!this.googleDriveService.isSignedIn()) {
         const signedIn = await this.googleDriveService.signIn();
         if (!signedIn) {
-          this.snackBar.open('Échec de la connexion à Google Drive', 'Fermer', {
-            duration: 3000
-          });
+          this.showErrorSnackbar('Échec de la connexion à Google Drive');
           return;
         }
       }
@@ -181,13 +263,18 @@ export class UploadDialogComponent {
       }
     } catch (error) {
       console.error('Erreur lors de l\'importation depuis Google Drive:', error);
-      this.snackBar.open('Erreur lors de l\'importation du fichier', 'Fermer', {
-        duration: 3000
-      });
+      this.showErrorSnackbar('Erreur lors de l\'importation du fichier');
     }
   }
 
   onClose() {
     this.dialogRef.close();
+  }
+
+  private showErrorSnackbar(message: string) {
+    this.snackBar.open(message, 'Fermer', {
+      duration: 3000,
+      panelClass: ['error-snackbar']
+    });
   }
 }

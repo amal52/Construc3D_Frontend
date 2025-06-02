@@ -12,7 +12,6 @@ export const environment = {
     apiUrl: 'http://localhost:3000/api',
     googleClientId: '845933994547-jsu9f094klli753cds5s82vjts731qp6.apps.googleusercontent.com',
     googleApiKey: 'AIzaSyBNXCzNXpvgUgM9pj4UtQy0PmPGn0mL9Xw',
-    googleRedirectUri: 'http://localhost:4200/auth/google/callback'
-    
-  
+    googleRedirectUri: 'http://localhost:4200/auth/google/callback',
+
 };
